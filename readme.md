@@ -1,5 +1,100 @@
 # LibreTV - 免费在线视频搜索与观看平台
 
+## 加入密码验证
+```html
+  <!-- 密码验证脚本 -->
+<script>
+  const correctPassword = "BiuXin"; // 修改为你的密码
+  const passwordKey = "access_granted";
+  const disclaimerKey = "hasSeenDisclaimer";
+
+  // 检查密码输入
+  function checkPassword() {
+    const input = document.getElementById("accessPassword").value;
+    const error = document.getElementById("passwordError");
+
+    if (input === correctPassword) {
+      localStorage.setItem(passwordKey, "true");
+      document.getElementById("passwordOverlay").style.display = "none";
+      document.body.style.overflow = "auto";
+    } else {
+      error.classList.remove("hidden");
+    }
+  }
+
+  window.addEventListener("load", () => {
+    const isGranted = localStorage.getItem(passwordKey);
+    const hasSeenDisclaimer = localStorage.getItem(disclaimerKey);
+
+    const disclaimerModal = document.getElementById('disclaimerModal');
+    const passwordOverlay = document.getElementById('passwordOverlay');
+
+    // 1. 如果还没看免责声明，则先显示免责声明
+    if (!hasSeenDisclaimer) {
+      disclaimerModal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+
+      const acceptBtn = document.getElementById('acceptDisclaimerBtn');
+      if (acceptBtn) {
+        acceptBtn.addEventListener('click', function () {
+          localStorage.setItem(disclaimerKey, 'true');
+          disclaimerModal.style.display = 'none';
+
+          // 接受后再检查是否通过密码
+          if (isGranted === "true") {
+            passwordOverlay.style.display = 'none';
+            document.body.style.overflow = 'auto';
+          } else {
+            passwordOverlay.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+          }
+        });
+      }
+    } else {
+      // 如果已看免责声明，再判断是否输入密码
+      if (isGranted === "true") {
+        passwordOverlay.style.display = 'none';
+        document.body.style.overflow = 'auto';
+      } else {
+        passwordOverlay.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+      }
+    }
+  });
+</script>
+  <!-- 密码验证弹窗 -->
+  <div id="passwordOverlay" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
+    <div class="bg-[#111827] p-8 rounded-2xl shadow-xl border border-gray-700 w-[90%] max-w-sm text-center">
+      <!-- Logo + 名称 -->
+      <div class="mb-6 flex justify-center items-center gap-2">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M4 6h8a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2z"/>
+        </svg>
+        <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-pink-500">LibreTV</h1>
+      </div>
+
+      <p class="text-sm text-gray-300 mb-6">请输入访问密码以继续</p>
+
+      <div class="text-left mb-3">
+        <label class="text-sm text-gray-400">访问密码</label>
+        <input type="password" id="accessPassword" placeholder="请输入访问密码"
+               class="mt-1 w-full px-4 py-2 rounded-md bg-[#1e293b] text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-pink-500" />
+      </div>
+
+      <button onclick="checkPassword()" 
+              class="w-full bg-gradient-to-r from-indigo-500 to-pink-500 hover:from-indigo-600 hover:to-pink-600 text-white font-bold py-2 rounded-md transition duration-300">
+        访问
+      </button>
+
+      <p id="passwordError" class="text-red-500 text-sm mt-3 hidden">密码错误，请重试</p>
+
+      <a href="https://blog.biuxin.com" target="_blank"
+      class="inline-block mt-4 text-sm px-4 py-2 rounded-md bg-gradient-to-r from-blue-500 to-pink-500 text-white hover:opacity-90">
+      密码是BiuXin
+    </a>
+    </div>
+```
+
 ## 📺 项目简介
 
 LibreTV是一个轻量级、免费的在线视频搜索与观看平台，提供来自多个视频源的内容搜索与播放服务。无需注册，即开即用，支持多种设备访问。项目采用纯前端技术构建，可轻松部署在各类静态网站托管服务上。
